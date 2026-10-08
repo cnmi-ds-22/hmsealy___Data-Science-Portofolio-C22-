@@ -7,7 +7,7 @@
         "id": "f3b2b9e9"
       },
       "source": [
-        "# Project 1 – To Do List\n",
+        "# Project 1 – Pass-01\n",
         "\n"
       ]
     },
@@ -20,9 +20,19 @@
       "source": [
         "## Problem Definition\n",
         "\n",
-        "1. State the business problem. Translate the business problem into a Data Science problem by stating what kind of problem it is ( supervised vs unsupervised ) and whether it is a classification, regression, or clustering problem.  Mention which model will be used, if known.\n",
-        "\n"
+        "1. State the business problem. Translate the business problem into a Data"
       ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Science problem by stating what kind of problem it is ( supervised vs unsupervised ) and whether it is a classification, regression, or clustering problem.  Mention which model will be used, if known.\n",
+        "\n"
+      ],
+      "metadata": {
+        "id": "wMSQX2ktDHEL"
+      },
+      "id": "wMSQX2ktDHEL"
     },
     {
       "cell_type": "markdown",
@@ -31,13 +41,57 @@
         "id": "4ffba5a0"
       },
       "source": [
-        "## Data Collection\n",
+        "## Data Collection"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
         "\n",
-        "2. Load Pandas, Numpy, and Matplotlib modules\n",
         "\n",
         "1. Load data Train.csv from AWS S3.\n",
         "\n"
-      ]
+      ],
+      "metadata": {
+        "id": "DRiKqeZ4ENhY"
+      },
+      "id": "DRiKqeZ4ENhY"
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "url = https://ddc-datascience.s3.amazonaws.com/Projects/Project.1-Transactions/Data/Transaction.train.csv"
+      ],
+      "metadata": {
+        "id": "5oxGzCj5Ei6e"
+      },
+      "id": "5oxGzCj5Ei6e",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "\n",
+        "\n",
+        "2. Load Pandas, Numpy, and Matplotlib modules"
+      ],
+      "metadata": {
+        "id": "D2PPD6Q3EhK2"
+      },
+      "id": "D2PPD6Q3EhK2"
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas"
+      ],
+      "metadata": {
+        "id": "KEziC1EVEYVQ"
+      },
+      "id": "KEziC1EVEYVQ",
+      "execution_count": null,
+      "outputs": []
     },
     {
       "cell_type": "markdown",
@@ -59,28 +113,187 @@
       "source": [
         "4. Examine the data using tools we have used in class. You should be identifying the various columns such as ...\n",
         "\n",
-        "    - target column\n",
-        "    - feature columns\n",
-        "    - identifier columns\n",
-        "    - null columns\n",
-        "    - null rows\n",
+        "    "
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "- target column\n",
+        "   "
+      ],
+      "metadata": {
+        "id": "Luu-bp-yF0KR"
+      },
+      "id": "Luu-bp-yF0KR"
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        " - feature columns\n",
+        "   "
+      ],
+      "metadata": {
+        "id": "RQpYUI1tFyvr"
+      },
+      "id": "RQpYUI1tFyvr"
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        " - identifier columns\n",
+        "    "
+      ],
+      "metadata": {
+        "id": "_Qir71ggFxd5"
+      },
+      "id": "_Qir71ggFxd5"
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "- null columns\n",
+        "    "
+      ],
+      "metadata": {
+        "id": "7Zx3Vsn8FwW4"
+      },
+      "id": "7Zx3Vsn8FwW4"
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "- null rows\n",
         "\n",
-        "    Tools you should be using include, but are not limited to:\n",
+        "    "
+      ],
+      "metadata": {
+        "id": "ZTn0-8O_Ft2x"
+      },
+      "id": "ZTn0-8O_Ft2x"
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Tools you should be using include, but are not limited to:\n",
         "\n",
-        "    - head\n",
-        "    - tail\n",
-        "    - shape\n",
-        "    - size\n",
-        "    - info\n",
-        "    - describe\n",
-        "    - nunique\n",
-        "    - unique\n",
-        "    - isnull/isna\n",
+        "   "
+      ],
+      "metadata": {
+        "id": "grtuWyJeFsUu"
+      },
+      "id": "grtuWyJeFsUu"
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        " - head\n",
+        "    "
+      ],
+      "metadata": {
+        "id": "FiDtPtUpFqGz"
+      },
+      "id": "FiDtPtUpFqGz"
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "- tail\n",
+        "    "
+      ],
+      "metadata": {
+        "id": "jH9jiqV_FobA"
+      },
+      "id": "jH9jiqV_FobA"
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "- shape\n",
+        "    "
+      ],
+      "metadata": {
+        "id": "W9R96k1CFmys"
+      },
+      "id": "W9R96k1CFmys"
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "- size\n",
+        "    "
+      ],
+      "metadata": {
+        "id": "gEI8Ccv-Flaq"
+      },
+      "id": "gEI8Ccv-Flaq"
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "- info\n",
+        "   "
+      ],
+      "metadata": {
+        "id": "8lmz8U99FjAJ"
+      },
+      "id": "8lmz8U99FjAJ"
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        " - describe\n",
+        "   "
+      ],
+      "metadata": {
+        "id": "rcgkFxivFhlg"
+      },
+      "id": "rcgkFxivFhlg"
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        " - nunique\n",
+        "   "
+      ],
+      "metadata": {
+        "id": "_BAJc2UKFf2j"
+      },
+      "id": "_BAJc2UKFf2j"
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        " - unique\n",
+        "  "
+      ],
+      "metadata": {
+        "id": "t_bbPiTsFeeF"
+      },
+      "id": "t_bbPiTsFeeF"
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "  - isnull/isna\n",
         "\n",
-        "\n",
+        "\n"
+      ],
+      "metadata": {
+        "id": "iggUk5AJFcaZ"
+      },
+      "id": "iggUk5AJFcaZ"
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
         "1. NOTE: the ‘target’ column indicates a successful transaction (‘1’) or a no-transaction (‘0’). Verify these are the only values in that column, and that there are no nulls.\n",
         "\n"
-      ]
+      ],
+      "metadata": {
+        "id": "Rl9GYP0sFZV8"
+      },
+      "id": "Rl9GYP0sFZV8"
     },
     {
       "cell_type": "markdown",
@@ -154,108 +367,6 @@
         "\n",
         "1. Present the results of a Classification Report (sklearn.metrics.classification_report)."
       ]
-    },
-    {
-      "cell_type": "markdown",
-      "id": "b5f2ea65",
-      "metadata": {
-        "id": "b5f2ea65"
-      },
-      "source": [
-        "### Multiple Cross-validation ( CV )"
-      ]
-    },
-    {
-      "cell_type": "markdown",
-      "id": "58321f50",
-      "metadata": {
-        "id": "58321f50"
-      },
-      "source": [
-        "18. Perform a cross-validation loop and record the accuracy of your model during each iteration.\n",
-        "\n",
-        "1. Report the mean accuracy. How does it compare to the accuracy you calculated for the Single CV?\n",
-        "\n",
-        "1. Plot a histogram of the accuracy scores you generated in your cross-validation loop. What do you notice about the distribution of accuracy scores?\n",
-        "\n",
-        "1. Present a confusion matrix and heatmap\n",
-        "\n",
-        "1. Present the results of a Classification Report (sklearn.metrics.classification_report).  What do you notice?  That is, how do the different metrics compare to each other?"
-      ]
-    },
-    {
-      "cell_type": "markdown",
-      "id": "9468106d",
-      "metadata": {
-        "id": "9468106d"
-      },
-      "source": [
-        "### Balanced data set\n",
-        "\n",
-        "The training data is very skewed towards non-successful transactions (about 90% of the training data has ‘target’==0).\n",
-        "\n",
-        "23. Remove enough non-successful transaction rows so that your remaining training data is 50%/50% split between successful and non-successful transactions. Hint: you can use the data frames you created in step #9.\n",
-        "\n",
-        "1. Repeat the multiple cross-validation process on this data set.\n",
-        "\n",
-        "1. Report what your mean accuracy for this balanced data set.\n",
-        "\n",
-        "1. Plot a histogram of the accuracy scores you generated in your cross-validation loop. What do you notice about the distribution of accuracy scores?\n",
-        "\n",
-        "1. Present a confusion matrix and heatmap\n",
-        "\n",
-        "1. Present the results of a Classification Report (sklearn.metrics.classification_report).  What do you notice?  That is, how do the different metrics compare to each other?\n"
-      ]
-    },
-    {
-      "cell_type": "markdown",
-      "id": "570167d6",
-      "metadata": {
-        "id": "570167d6"
-      },
-      "source": [
-        "## Data Visualization"
-      ]
-    },
-    {
-      "cell_type": "markdown",
-      "id": "d05d6bfc",
-      "metadata": {
-        "id": "d05d6bfc"
-      },
-      "source": [
-        "29. Compare the accuracy results of your multiple cross-validation with the whole training data and the balanced training data\n",
-        "\n",
-        "1. Present the confusion matrix and heatmap\n",
-        "\n",
-        "1. Present the results of your Classification Report (sklearn.metrics.classification_report)\n"
-      ]
-    },
-    {
-      "cell_type": "markdown",
-      "id": "a8e86b89",
-      "metadata": {
-        "id": "a8e86b89"
-      },
-      "source": [
-        "## Communicate the Results\n",
-        "\n",
-        "32. Communicate the results of your analysis.\n",
-        "\n"
-      ]
-    },
-    {
-      "cell_type": "markdown",
-      "id": "5da5c502",
-      "metadata": {
-        "id": "5da5c502"
-      },
-      "source": [
-        "## Submit Final Project\n",
-        "\n",
-        "33. Save ( commit ) your finished Jupyter notebook to your Project 1 GitHub repo.\n",
-        "\n"
-      ]
     }
   ],
   "metadata": {
@@ -265,7 +376,8 @@
       "notebook_metadata_filter": "-all"
     },
     "colab": {
-      "provenance": []
+      "provenance": [],
+      "toc_visible": true
     }
   },
   "nbformat": 4,
