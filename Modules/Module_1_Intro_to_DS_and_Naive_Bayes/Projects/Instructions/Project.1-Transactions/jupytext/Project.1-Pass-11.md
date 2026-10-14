@@ -342,7 +342,7 @@ print(len(feature_cols))
 transaction_df_features_only = transaction_df_target_clean[feature_cols]
 feature_corr = transaction_df_features_only.corr()
 
-plt.figure(figsize=(25, 25))
+plt.figure(figsize=(10, 10))
 sns.heatmap(feature_corr,
             annot=False,
             cmap='coolwarm',  # blue = negative, red = positive
@@ -718,7 +718,7 @@ print(metrics.classification_report(y_test_balance, y_pred_balance,))
 
 |   | Whole data | Balanced data|
 |---|---|---|
-| Average accuracy (100 runs)| 92% | 75%|
+| Average accuracy (100 runs)| 91% | 76%|
 | Recall:  | 0.23 | 0.74|
 |Precision: |0.66|0.76
 
@@ -734,5 +734,6 @@ print(metrics.classification_report(y_test_balance, y_pred_balance,))
   - higher precision it guess right the transaction made
 
 ### Conclusion
-  - use the balance data because it solve the business problem of predict when a transaction will be made successful. The other model fail at locating successful transaction.
+  - Use the Balance data because it solve the business problem of predict when a transaction will be made successful.
+  - The Whole data model fail at locating successful transaction.
 
