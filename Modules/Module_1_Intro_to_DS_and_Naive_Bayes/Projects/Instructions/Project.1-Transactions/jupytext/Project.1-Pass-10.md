@@ -1,5 +1,4 @@
-# Project 1 – Pass-01
-
+# Project 1 – Pass-10
 
 
 
@@ -8,7 +7,7 @@
 
 
 
-Business problem: Predict whether a customer will make a transaction,
+Business problem: Predict whether a customer will make a successfull transaction,
 
 
 Data Science problem: This is a supervised learning and classification problem. I will use the Gaussian Naive Bayes model
@@ -37,7 +36,7 @@ from sklearn import datasets, metrics, model_selection
 ### File Paths
 
 ```python
-url = 'https://ddc-datascience.s3.amazonaws.com/Projects/Project.1-Transactions/Data/Transaction.train.csv'
+url = 'https://ddc-datascience.s3.amazonaws.com/Projects/Project.1-Transactions/Data/Transaction.train.big.csv'
 ```
 
 ### Load data
@@ -66,6 +65,8 @@ transaction_df.tail()
 ```python
 # shape of data frame
 transaction_df.shape
+
+#output (# of rows, # of columns)
 ```
 
 ### Size
@@ -115,7 +116,16 @@ transaction_df['target'].value_counts(normalize=True, dropna=False)
 # look for nulls
 transaction_df.isnull().sum().sort_values(ascending=False)
 
-#output null rows:none (every column has 0 nulls, so no row can contain one)
+
+```
+
+```python
+# look for nulls, display relative frequency
+null_sum = transaction_df.isnull().sum()
+null_freq = null_sum / transaction_df.shape[0] * 100
+null_freq.sort_values()
+
+#Output- target has 82% percent null values
 ```
 
 ### Column data types
@@ -125,7 +135,7 @@ transaction_df.isnull().sum().sort_values(ascending=False)
 transaction_df.dtypes.sort_values()
 ```
 
-###Unique elements
+### Unique elements
 
 ```python
 # number of unique elements in every column (works on the whole dataframe)
@@ -135,6 +145,10 @@ transaction_df.nunique().sort_values(ascending=False)
 ```python
 # actual unique values in one column
 transaction_df['target'].unique()
+```
+
+```python
+
 ```
 
 ## Data Cleaning
@@ -155,36 +169,62 @@ transaction_df_backup= transaction_df.copy()
 transaction_df=transaction_df_backup.copy()
 ```
 
-### Keep only the target and features
+### Drop rows with no target
+  - The target has 83% nulls. Model cant learn from rows with no answer, remove them first
 
 
-Selected `target` for the target and `var_0 through var_4` for the features
+Selected `target` for the target and drop the rows with null values
 
 ```python
-# select the target (first 1000 rows)
-transaction_df_target=transaction_df[['target']].head(1000).copy()
-transaction_df_target.shape
+# Keep only the rows where target is not missing
+transaction_df_target=transaction_df.dropna(subset=['target']).copy()
+transaction_df_target.head()
 ```
 
 ```python
-# select the features
-feature_cols =[] #start with an empty list to hold the features
-for col in transaction_df.columns: #look at each column name
-  if col.startswith ('var_'): #if the name start with 'var_, it's a feature
-    feature_cols.append(col)
-# check the list (show 50 names)
-print(feature_cols)
-print(len(feature_cols))
+transaction_df_target.head(10) # this is to check
+```
+
+### Backup #2
+
+```python
+# make backup
+transaction_df_target_backup = transaction_df_target.copy()
 ```
 
 ```python
-# select the target and the features
-feature_cols= feature_cols[0:5] #keep only the first 5 feature (var0 to var4)
+# restore from back up
+transaction_df_target = transaction_df_target_backup.copy()
+```
 
-#keep only the first 1000 rows,
-transaction_df_target_feature = transaction_df[['target'] + feature_cols].head(1000).copy()
+### Address any rows with nulls
 
-transaction_df_target_feature.shape #verify
+
+- If the number of nulls in a column is low, it would be easiest to drop the row.
+- If the number of nulls in a column is high, it would be easiest to drop the column.
+- If the number of nulls in a column is between the low and high, one should impute values for the nulls.
+
+```python
+transaction_df_target.isnull().sum().sort_values (ascending=False) # show me where the null value are
+```
+
+```python
+# Remove all the null row under target
+transaction_df_target_clean =transaction_df_target.dropna(axis ='columns')
+transaction_df_target_clean.isnull().sum().sort_values(ascending=False)
+
+transaction_df_target_clean.head()
+
+
+```
+
+```python
+#DROP THE 'UNMAMED:0 and id_code, colums)
+transaction_df_target_clean = transaction_df_target_clean.drop (columns=['Unnamed: 0','ID_code'])
+transaction_df_target_clean
+```
+
+```python
 
 ```
 
@@ -196,7 +236,7 @@ transaction_df_target_feature.shape #verify
 
 **2. Null values:** No feature column have nulls. no action needed
 
-**3. Target nulls:** none, no rows dropped
+**3. Target nulls:** 82% null values, rows with nulls are dropped
 
 **4. Feature columns with high null counts:** None
 
@@ -214,39 +254,41 @@ transaction_df_target_feature.shape #verify
 ### Normal distribution of features:histogram
 
 ```python
-# Display a histogram - overview of target and the 5 features
+# Display a histogram
 
-transaction_df_target_feature.hist(figsize=(12, 8), bins=30)
+transaction_df_target_clean.hist(figsize=(12, 8), bins=30)
 plt.tight_layout()
 plt.show()
 
 ```
 
 ```python
-# Check the distributions of the 5 features (var_0 to var_4)
+# Check the distributions of the 20 features (var_0 to var_19)
 
-transaction_df_target_feature[feature_cols].hist(figsize=(15, 4), bins=30, layout=(1, 5))
+transaction_df_target_clean.hist(
+  figsize=(15,15), # size of the whole picture in inches(width,height)
+  layout=(10,10),    # 5 rows, 4 column= 20 boxes
+  bins=30,         # more bars, so the shape is clear
+  edgecolor= "yellow"
+)
 plt.tight_layout()
 plt.show()
-
 #output- each graph look like a bell-shaped (first GNB assumption)
-
-
 ```
 
 ### Independence of features: Correlation matrix
 
 ```python
 # Calculate a correlation matrix (target & features)
-transaction_df_target_feature.corr()
+transaction_df_target_clean.corr()
 ```
 
 ```python
 # Display the correlation matrix
 
-plt.figure(figsize=(16, 12))
-sns.heatmap(transaction_df_target_feature.corr(),
-            annot=True,
+plt.figure(figsize=(30, 30))
+sns.heatmap(transaction_df_target_clean.corr(),
+            annot=False,
             cmap='coolwarm',  # blue = negative, red = positive
             center=0,         # white = no correlation
             vmin=-1, vmax=1)  # full correlation range
@@ -256,13 +298,24 @@ plt.show()
 ```
 
 ```python
+# select the features
+feature_cols =[] #start with an empty list to hold the features
+for col in transaction_df_target_clean.columns: #look at each column name
+  if col.startswith ('var_'): #if the name start with 'var_, it's a feature
+    feature_cols.append(col)
+
+print(feature_cols)
+print(len(feature_cols))
+```
+
+```python
 # Calculate a correlation matrix (features only)
-transaction_df_features_only = transaction_df_target_feature[feature_cols]
+transaction_df_features_only = transaction_df_target_clean[feature_cols]
 feature_corr = transaction_df_features_only.corr()
 
-plt.figure(figsize=(16, 12))
+plt.figure(figsize=(25, 25))
 sns.heatmap(feature_corr,
-            annot=True,
+            annot=False,
             cmap='coolwarm',  # blue = negative, red = positive
             center=0,         # white/gray = no correlation
             vmin=-1, vmax=1)  # full correlation range
@@ -278,10 +331,10 @@ plt.show()
 # Create two data frames
 
 # no transaction (target= 0)
-transaction_df_no_success= transaction_df_target_feature[transaction_df_target_feature['target'] == 0].copy()
+transaction_df_no_success= transaction_df_target_clean[transaction_df_target_clean['target'] == 0].copy()
 
 # successful transaction (target= 1)
-transaction_df_successful= transaction_df_target_feature[transaction_df_target_feature['target'] == 1].copy()
+transaction_df_successful= transaction_df_target_clean[transaction_df_target_clean['target'] == 1].copy()
 
 
 print(type(transaction_df_successful))
@@ -299,8 +352,8 @@ print(transaction_df_no_success.shape)
 
 ```python
 # Split data from into target and features
-target =transaction_df_target['target'].copy()
-features= transaction_df_target_feature [feature_cols].copy()
+target =transaction_df_target_clean['target'].copy()
+features= transaction_df_target_clean [feature_cols].copy()
 
 
 ```
@@ -376,22 +429,93 @@ print(metrics.classification_report(y_test, pred_result,zero_division=0 ))
 
 The target show no transaction (‘0’) or  successful transaction (‘1’).
 
-**Accuracy:** 90.4%
+**Accuracy:** 90%
 
 
 **Confusion matrix:**
 
- - 226: guessed no transaction, actually no transaction → right
+ - 224: guessed no transaction, actually no transaction → right
   
- - 24: guessed no transaction, actually successfull transaction → wrong
+ - 23: guessed no transaction, actually successfull transaction → wrong
+
+ - 2: guessed sucessful transaction, actually no transaction -> wrong
+
+ - 1: guess sucessful transaction, actually transaction ->right
   
 **Classification report:**
   
-  - Recall for successfull transaction: 0.00
-  The model did not find any successfull transaction.
+  - Recall for successfull transaction: 0.04
+    - The model found 1 out 24 successfull transaction.
+
+  - Precision for successfull transaction: 0.33
+    - The model said successfull transaction 3 times, right once  
+
+  - 90% is just for the no transaction customer.
+
+**Takeaway:** The model guessed "no transaction" for most customer transaction.
+
+
+
+### Multiple Cross Validation
+
+```python
+# Multiple cross-validation loop
+n= 100
+results= np.zeros(n)
+
+for i in range(n):
+  x_train, x_test, y_train, y_test= train_test_split(features,target,test_size=0.25, random_state=i)
+  modelGNB = GaussianNB()
+  modelGNB.fit(x_train,y_train)
+  y_pred = modelGNB.predict(x_test)
+  results[i]=metrics.accuracy_score(y_test,y_pred)
+
+results
+
+```
+
+```python
+# Calculate mean of results
+results.mean()
+```
+
+```python
+# Display a histogram of the results
+plt.hist(results) ;
+```
+
+```python
+# display a confusion matrix
+
+mat= metrics.confusion_matrix(y_test,y_pred,)
+sns.heatmap( mat.T,
+    square=True,
+    annot=True,
+    fmt = "d",
+    cbar = False,
+    xticklabels=names,  #names start left to right
+    yticklabels=names,  #names start from top to bottom
+)
+plt.xlabel('Actual (what really happened)')
+plt.ylabel('Predicted (the guess)') ;
+```
+
+```python
+# Classification report
+print(metrics.classification_report(y_test, y_pred))
+```
+
+### Communication of Multiple Cross Classification report
+
+
+**Classification report:**
   
-  - 90.4% is just for the no transaction customer.
+  - Recall for successfull transaction: 0.23
+    - The model found 1038 out 4518 successfull transaction.
 
-**Takeaway:** The model guessed "no transaction" for every customer.
+  - Precision for successfull transaction: 0.69
+    - The model said successfull transaction 1509 times, right 1038 times   
 
+  - 91% is just for the no transaction customer.
 
+**Takeaway:** The model guessed "no transaction" for most customer transaction.

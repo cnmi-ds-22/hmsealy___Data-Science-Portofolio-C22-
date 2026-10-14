@@ -6,7 +6,7 @@
 
 
 
-Business problem: Predict whether a customer will make a transaction,
+Business problem: Predict whether a customer will make a successful transaction,
 
 Data Science problem: This is a supervised learning and classification problem. I will use the Gaussian Naive Bayes model
 
@@ -58,7 +58,7 @@ transaction_df.head()
 
 
 
-  <div id="df-d02caeda-e962-4cb1-ab66-86be8f532d08" class="colab-df-container">
+  <div id="df-7967eec9-0d22-4c9b-8412-305f64577824" class="colab-df-container">
     <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -228,7 +228,7 @@ transaction_df.head()
     <div class="colab-df-buttons">
 
   <div class="colab-df-container">
-    <button class="colab-df-convert" onclick="convertToInteractive('df-d02caeda-e962-4cb1-ab66-86be8f532d08')"
+    <button class="colab-df-convert" onclick="convertToInteractive('df-7967eec9-0d22-4c9b-8412-305f64577824')"
             title="Convert this dataframe to an interactive table."
             style="display:none;">
 
@@ -280,12 +280,12 @@ transaction_df.head()
 
     <script>
       const buttonEl =
-        document.querySelector('#df-d02caeda-e962-4cb1-ab66-86be8f532d08 button.colab-df-convert');
+        document.querySelector('#df-7967eec9-0d22-4c9b-8412-305f64577824 button.colab-df-convert');
       buttonEl.style.display =
         google.colab.kernel.accessAllowed ? 'block' : 'none';
 
       async function convertToInteractive(key) {
-        const element = document.querySelector('#df-d02caeda-e962-4cb1-ab66-86be8f532d08');
+        const element = document.querySelector('#df-7967eec9-0d22-4c9b-8412-305f64577824');
         const dataTable =
           await google.colab.kernel.invokeFunction('convertToInteractive',
                                                     [key], {});
@@ -323,7 +323,7 @@ transaction_df.tail()
 
 
 
-  <div id="df-9971133b-e5c8-4fc2-8ae0-a433b7bc8da2" class="colab-df-container">
+  <div id="df-afd07069-4287-4d0f-88f9-801c66fceae9" class="colab-df-container">
     <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -493,7 +493,7 @@ transaction_df.tail()
     <div class="colab-df-buttons">
 
   <div class="colab-df-container">
-    <button class="colab-df-convert" onclick="convertToInteractive('df-9971133b-e5c8-4fc2-8ae0-a433b7bc8da2')"
+    <button class="colab-df-convert" onclick="convertToInteractive('df-afd07069-4287-4d0f-88f9-801c66fceae9')"
             title="Convert this dataframe to an interactive table."
             style="display:none;">
 
@@ -545,12 +545,12 @@ transaction_df.tail()
 
     <script>
       const buttonEl =
-        document.querySelector('#df-9971133b-e5c8-4fc2-8ae0-a433b7bc8da2 button.colab-df-convert');
+        document.querySelector('#df-afd07069-4287-4d0f-88f9-801c66fceae9 button.colab-df-convert');
       buttonEl.style.display =
         google.colab.kernel.accessAllowed ? 'block' : 'none';
 
       async function convertToInteractive(key) {
-        const element = document.querySelector('#df-9971133b-e5c8-4fc2-8ae0-a433b7bc8da2');
+        const element = document.querySelector('#df-afd07069-4287-4d0f-88f9-801c66fceae9');
         const dataTable =
           await google.colab.kernel.invokeFunction('convertToInteractive',
                                                     [key], {});
@@ -694,7 +694,7 @@ transaction_df.describe()
 
 
 
-  <div id="df-b3efd2db-c97d-4575-9f13-ca81a96bfd46" class="colab-df-container">
+  <div id="df-82a02c06-f4b3-446f-98f6-ac8f8dd8886e" class="colab-df-container">
     <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -936,7 +936,7 @@ transaction_df.describe()
     <div class="colab-df-buttons">
 
   <div class="colab-df-container">
-    <button class="colab-df-convert" onclick="convertToInteractive('df-b3efd2db-c97d-4575-9f13-ca81a96bfd46')"
+    <button class="colab-df-convert" onclick="convertToInteractive('df-82a02c06-f4b3-446f-98f6-ac8f8dd8886e')"
             title="Convert this dataframe to an interactive table."
             style="display:none;">
 
@@ -988,12 +988,12 @@ transaction_df.describe()
 
     <script>
       const buttonEl =
-        document.querySelector('#df-b3efd2db-c97d-4575-9f13-ca81a96bfd46 button.colab-df-convert');
+        document.querySelector('#df-82a02c06-f4b3-446f-98f6-ac8f8dd8886e button.colab-df-convert');
       buttonEl.style.display =
         google.colab.kernel.accessAllowed ? 'block' : 'none';
 
       async function convertToInteractive(key) {
-        const element = document.querySelector('#df-b3efd2db-c97d-4575-9f13-ca81a96bfd46');
+        const element = document.querySelector('#df-82a02c06-f4b3-446f-98f6-ac8f8dd8886e');
         const dataTable =
           await google.colab.kernel.invokeFunction('convertToInteractive',
                                                     [key], {});
@@ -2033,7 +2033,7 @@ transaction_df_target_feature.corr()
 
 
 
-  <div id="df-cb29ffda-762e-4219-8191-b6988c559510" class="colab-df-container">
+  <div id="df-17135121-d291-42ef-a545-90155074b562" class="colab-df-container">
     <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -3307,7 +3307,7 @@ transaction_df_target_feature.corr()
     <div class="colab-df-buttons">
 
   <div class="colab-df-container">
-    <button class="colab-df-convert" onclick="convertToInteractive('df-cb29ffda-762e-4219-8191-b6988c559510')"
+    <button class="colab-df-convert" onclick="convertToInteractive('df-17135121-d291-42ef-a545-90155074b562')"
             title="Convert this dataframe to an interactive table."
             style="display:none;">
 
@@ -3359,12 +3359,12 @@ transaction_df_target_feature.corr()
 
     <script>
       const buttonEl =
-        document.querySelector('#df-cb29ffda-762e-4219-8191-b6988c559510 button.colab-df-convert');
+        document.querySelector('#df-17135121-d291-42ef-a545-90155074b562 button.colab-df-convert');
       buttonEl.style.display =
         google.colab.kernel.accessAllowed ? 'block' : 'none';
 
       async function convertToInteractive(key) {
-        const element = document.querySelector('#df-cb29ffda-762e-4219-8191-b6988c559510');
+        const element = document.querySelector('#df-17135121-d291-42ef-a545-90155074b562');
         const dataTable =
           await google.colab.kernel.invokeFunction('convertToInteractive',
                                                     [key], {});
@@ -4016,21 +4016,20 @@ The target show no transaction (‘0’) or  successful transaction (‘1’).
 
  - 39,915: guessed no transaction, actually no transaction → right
   
- - 3576: guessed no transaction, actually successfull transaction → wrong
+ - 3576: guessed no transaction, actually successful transaction → wrong
 
- - 511: guessed sucessful transaction, actually no transaction -> wrong
+ - 511: guessed successful transaction, actually no transaction -> wrong
 
- - 998: guess sucessful transaction, actually transaction ->right
+ - 998: guess successful transaction, actually transaction ->right
   
 **Classification report:**
   
-  - Recall for successfull transaction: 0.22
-    - The model found 998 out 4574 successfull transaction.
+  - Recall for successful transaction: 0.22
+    - The model found 998 out 4574 successful transaction.
 
-  - Precision for successfull transaction: 0.66
-    - The model said successfull transaction 1509 times, right 998 times   
+  - Precision for successful transaction: 0.66
+    - The model said successful transaction 1509 times, right 998 times   
 
-  - 91% is just for the no transaction customer.
 
 **Takeaway:** The model guessed "no transaction" for most customer transaction.
 
@@ -4097,12 +4096,6 @@ results.mean()
 
 
 
-
-```python
-# Plot a histogram
-
-```
-
 #### Difference between Single CV accuracy & Multiple CV accuracy
 
 - Single CV accuracy= 90.91%
@@ -4117,7 +4110,7 @@ plt.hist(results) ;
 
 
     
-![png](Project.1-Pass-06_files/Project.1-Pass-06_76_0.png)
+![png](Project.1-Pass-06_files/Project.1-Pass-06_75_0.png)
     
 
 
@@ -4146,7 +4139,7 @@ plt.ylabel('Predicted (the guess)') ;
 
 
     
-![png](Project.1-Pass-06_files/Project.1-Pass-06_78_0.png)
+![png](Project.1-Pass-06_files/Project.1-Pass-06_77_0.png)
     
 
 
@@ -4171,13 +4164,12 @@ print(metrics.classification_report(y_test, y_pred))
 
 **Classification report:**
   
-  - Recall for successfull transaction: 0.23
+  - Recall for successful transaction: 0.23
     - model caught 1 in 4 real transaction
 
-  - Precision for successfull transaction: 0.69
+  - Precision for successful transaction: 0.69
     - when the model guess"transaction it was right about 7 out of 10 times
 
-  - 91% is just for the no transaction customer.
 
 **Takeaway:** The model guessed "no transaction" for most customer transaction.
 
@@ -4187,7 +4179,7 @@ print(metrics.classification_report(y_test, y_pred))
 ```python
 # Count the transactions databases
 number_of_success= len(transaction_df_successful) #len()counts how many rows
-print('Successfull rows:',number_of_success)
+print('successful rows:',number_of_success)
 
 number_of_not_successful=len(transaction_df_no_success)
 print('No Success rows:',number_of_not_successful)
@@ -4195,13 +4187,13 @@ print('No Success rows:',number_of_not_successful)
 
 ```
 
-    Successfull rows: 18040
+    successful rows: 18040
     No Success rows: 161960
 
 
 
 ```python
-# Create sample of no success row to equal successfull rows
+# Create sample of no success row to equal successful rows
 transaction_df_no_success_sampled = transaction_df_no_success.sample(n=number_of_success, random_state=42)
 print(len(transaction_df_no_success_sampled))
 ```
@@ -4334,13 +4326,13 @@ plt.hist(balance_results) ;
 
 
     
-![png](Project.1-Pass-06_files/Project.1-Pass-06_90_0.png)
+![png](Project.1-Pass-06_files/Project.1-Pass-06_89_0.png)
     
 
 
 #### Histogram observation
 
-- Most of the accuracy score is between 75%-76%, the accuracy score look a little wider
+- Most of the accuracy score is between 75%-76.5%, the accuracy score look a little wider than the whole data histogram
 
 
 ```python
@@ -4361,7 +4353,7 @@ plt.ylabel('Predicted (the guess)') ;
 
 
     
-![png](Project.1-Pass-06_files/Project.1-Pass-06_92_0.png)
+![png](Project.1-Pass-06_files/Project.1-Pass-06_91_0.png)
     
 
 
@@ -4382,11 +4374,13 @@ print(metrics.classification_report(y_test, y_pred))
     
 
 
+Precision and recall are about 75%. This model can guess 3 out of 4 success transaction instead of 1 out of 4 sucess in the whole data model.
+
 ## Data Visualization
 
 
 ```python
-# Model 1: Whole data [cell 26]
+# Model 1: Whole data
 x_train, x_test, y_train, y_test_whole = train_test_split(features, target, test_size=0.25, random_state=42)
 model_whole = GaussianNB()
 model_whole.fit(x_train, y_train)
@@ -4511,9 +4505,9 @@ print(metrics.classification_report(y_test_balance, y_pred_balance,))
 
 ### Balanced data
   - had a lower accuracy percentage because it guess a higher amount of success transaction
-  - higer recall because it did catch customer who made a transaction
+  - higher recall because it did catch customer who made a transaction
   - higher precision it guess right the transaction made
 
 ### Conclusion
-  - use the balance data because it solve the business problem of predit when a transaction will be made successful. The other model fail at locating succesfull transaction.
+  - use the balance data because it solve the business problem of predict when a transaction will be made successful. The other model fail at locating successful transaction.
 
