@@ -8,7 +8,7 @@
 
 
 
-Business problem: Predict whether a customer will make a transaction,
+Business problem: Predict whether a customer will make a successful transaction,
 
 
 Data Science problem: This is a supervised learning and classification problem. I will use the Gaussian Naive Bayes model
@@ -387,21 +387,20 @@ The target show no transaction (‘0’) or  successful transaction (‘1’).
 
  - 39,915: guessed no transaction, actually no transaction → right
   
- - 3576: guessed no transaction, actually successfull transaction → wrong
+ - 3576: guessed no transaction, actually successful transaction → wrong
 
- - 511: guessed sucessful transaction, actually no transaction -> wrong
+ - 511: guessed successful transaction, actually no transaction -> wrong
 
- - 998: guess sucessful transaction, actually transaction ->right
+ - 998: guess successful transaction, actually transaction ->right
   
 **Classification report:**
   
-  - Recall for successfull transaction: 0.22
-    - The model found 998 out 4574 successfull transaction.
+  - Recall for successful transaction: 0.22
+    - The model found 998 out 4574 successful transaction.
 
-  - Precision for successfull transaction: 0.66
-    - The model said successfull transaction 1509 times, right 998 times   
+  - Precision for successful transaction: 0.66
+    - The model said successful transaction 1509 times, right 998 times   
 
-  - 91% is just for the no transaction customer.
 
 **Takeaway:** The model guessed "no transaction" for most customer transaction.
 
@@ -431,11 +430,6 @@ results
 ```python
 # Calculate mean of results
 results.mean()
-```
-
-```python
-# Plot a histogram
-
 ```
 
 #### Difference between Single CV accuracy & Multiple CV accuracy
@@ -478,26 +472,23 @@ print(metrics.classification_report(y_test, y_pred))
 
 ### Communication of Multiple Cross Classification report
 
-
 **Classification report:**
   
-  - Recall for successfull transaction: 0.23
+  - Recall for successful transaction: 0.23
     - model caught 1 in 4 real transaction
 
-  - Precision for successfull transaction: 0.69
+  - Precision for successful transaction: 0.69
     - when the model guess"transaction it was right about 7 out of 10 times
 
-  - 91% is just for the no transaction customer.
 
 **Takeaway:** The model guessed "no transaction" for most customer transaction.
-
 
 ## Balanced data set
 
 ```python
 # Count the transactions databases
 number_of_success= len(transaction_df_successful) #len()counts how many rows
-print('Successfull rows:',number_of_success)
+print('successful rows:',number_of_success)
 
 number_of_not_successful=len(transaction_df_no_success)
 print('No Success rows:',number_of_not_successful)
@@ -506,7 +497,7 @@ print('No Success rows:',number_of_not_successful)
 ```
 
 ```python
-# Create sample of no success row to equal successfull rows
+# Create sample of no success row to equal successful rows
 transaction_df_no_success_sampled = transaction_df_no_success.sample(n=number_of_success, random_state=42)
 print(len(transaction_df_no_success_sampled))
 ```
@@ -554,7 +545,7 @@ plt.hist(balance_results) ;
 
 #### Histogram observation
 
-- Most of the accuracy score is between 75%-76%, the accuracy score look a little wider
+- Most of the accuracy score is between 75%-76.5%, the accuracy score look a little wider than the whole data histogram
 
 ```python
 # display a confusion matrix
@@ -577,10 +568,13 @@ plt.ylabel('Predicted (the guess)') ;
 print(metrics.classification_report(y_test, y_pred))
 ```
 
+Precision and recall are about 75%. This model can guess 3 out of 4 success transaction instead of 1 out of 4 sucess in the whole data model.
+
+
 ## Data Visualization
 
 ```python
-# Model 1: Whole data [cell 26]
+# Model 1: Whole data
 x_train, x_test, y_train, y_test_whole = train_test_split(features, target, test_size=0.25, random_state=42)
 model_whole = GaussianNB()
 model_whole.fit(x_train, y_train)
@@ -662,9 +656,9 @@ print(metrics.classification_report(y_test_balance, y_pred_balance,))
 
 ### Balanced data
   - had a lower accuracy percentage because it guess a higher amount of success transaction
-  - higer recall because it did catch customer who made a transaction
+  - higher recall because it did catch customer who made a transaction
   - higher precision it guess right the transaction made
 
 ### Conclusion
-  - use the balance data because it solve the business problem of predit when a transaction will be made successful. The other model fail at locating succesfull transaction.
+  - use the balance data because it solve the business problem of predict when a transaction will be made successful. The other model fail at locating successful transaction.
 
