@@ -141,7 +141,7 @@ print(median_garage_yr)
 
 # Fill nulls with the median
 house_df_target_floats['Lot Frontage']= house_df_target_floats['Lot Frontage'].fillna(median_frontage)
-house_df_target_floats['Garage Yr Blt']= house_df_target_floats['Garage Yr Blt'].fillna(median_frontage)
+house_df_target_floats['Garage Yr Blt']= house_df_target_floats['Garage Yr Blt'].fillna(median_garage_yr)
 
 #verify there are no nulls
 house_df_target_floats.isnull().sum()
@@ -154,6 +154,24 @@ print(house_df_target_floats['Garage Yr Blt'].median())
 ```
 
 ```python
+house_df_target_floats.isnull().sum() * 100000
+```
+
+```python
+# drop the nulls values in features
+house_df_target_floats = house_df_target_floats.dropna(subset=['Mas Vnr Area',
+'BsmtFin SF 1',
+'BsmtFin SF 2',
+'Bsmt Unf SF',
+'Total Bsmt SF',
+'Bsmt Full Bath',
+'Garage Cars',
+'Garage Area',
+'Bsmt Half Bath'])
+```
+
+```python
+#check that null are removed from features
 house_df_target_floats.isnull().sum()
 ```
 
@@ -166,14 +184,9 @@ Linear Regression has two requirements:
 1. the features are not correlated with each other
 
 ```python
-# Calculate a correlation matrix for target
-house_df.corr() ;
-```
-
-```python
-# Display the correlation matrix
+# Calcualte & display  correlation matrix, check if feature corelated with target
 plt.figure(figsize=(8, 6))
-sns.heatmap(house_df.corr(),
+sns.heatmap(house_df_target_floats.corr(),
             annot=True,
             cmap='coolwarm',  # blue = negative, red = positive
             center=0,         # white = no correlation
@@ -183,7 +196,22 @@ plt.show()
 ```
 
 ```python
+# Calculate a correlation matrix for features & features
+features_df = house_df_target_floats.drop(columns=['SalePrice'])
+features_corr = features_df.corr()
+```
 
+```python
+# Display the matrix, check if features are correlated with each other
+plt.figure(figsize=(12, 10))      # bigger, since there are more columns
+sns.heatmap(features_corr,
+            annot=True,
+            fmt='.2f',            # round numbers to 2 decimals so they fit
+            cmap='coolwarm',
+            center=0,
+            vmin=-1, vmax=1)
+plt.title('Feature-to-Feature Correlation Matrix')
+plt.show()
 ```
 
 ```python
