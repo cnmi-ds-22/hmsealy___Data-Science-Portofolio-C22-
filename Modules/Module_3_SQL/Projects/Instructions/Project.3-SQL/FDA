@@ -1,0 +1,1411 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": []
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# Project SQL - BigQuery"
+      ],
+      "metadata": {
+        "id": "cJG_e1vK2NMI"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "## Pick a dataset that interests you (or multiple data sets)\n",
+        "\n",
+        "Use the Open Data Sets available from Google BigQuery. You can use your own Google account or Kaggle.\n",
+        "\n"
+      ],
+      "metadata": {
+        "id": "s6jMcIbW3P5o"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "## Come up with questions about your data\n",
+        "* What sort of information is in this dataset?\n",
+        "* How many records are there?\n",
+        "* Have the number of bitcoin transactions increased year over year?\n",
+        "* Does New Mexico get more or less rain now than 20 years ago?\n",
+        "* How many different countries (states, counties, cities, etc) have records in this data set?\n",
+        "\n",
+        "\n"
+      ],
+      "metadata": {
+        "id": "OA9Mp38s52x2"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "## Use SQL queries to pull specific information\n",
+        "\n",
+        "Like with the Chinook data base, do NOT pull all the data and then filter using DataFrame methods etc.\n",
+        "\n",
+        "Write your question and then answer it using the SQL statements below.  Be sure to use guardrails ( e.g. dryrun ).\n",
+        "\n"
+      ],
+      "metadata": {
+        "id": "TqvaIfog546s"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from google.colab import auth\n",
+        "from google.cloud import bigquery\n",
+        "\n",
+        "auth.authenticate_user()\n",
+        "client = bigquery.Client(project=\"sql-fdarecall-dataset\")"
+      ],
+      "metadata": {
+        "id": "xYzwfK-T_Juw"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def bq_query(query, max_gb=1):\n",
+        "    # Guardrail 1: dry run estimates the size without running the query\n",
+        "    dry_config = bigquery.QueryJobConfig(dry_run=True, use_query_cache=False)\n",
+        "    gb = client.query(query, job_config=dry_config).total_bytes_processed / 1e9\n",
+        "    print(f\"Dry run: {gb:.4f} GB\")\n",
+        "\n",
+        "    if gb > max_gb:\n",
+        "        print(\"Too large. Query not run.\")\n",
+        "        return None\n",
+        "\n",
+        "    # Guardrail 2: hard limit on bytes billed\n",
+        "    real_config = bigquery.QueryJobConfig(maximum_bytes_billed=int(max_gb * 1e9))\n",
+        "    return client.query(query, job_config=real_config).to_dataframe()"
+      ],
+      "metadata": {
+        "id": "NuKp2lLqDdFT"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "### Basic Queries\n"
+      ],
+      "metadata": {
+        "id": "9QgYkDsPvJf2"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "#### SELECT (with * and with column names)\n"
+      ],
+      "metadata": {
+        "id": "77IYGkDIvo_0"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "query = '''\n",
+        "  SELECT table_name\n",
+        "  FROM `bigquery-public-data.fda_drug.INFORMATION_SCHEMA.TABLES`\n",
+        "'''\n",
+        "print(query)\n",
+        "tables = bq_query(query)\n",
+        "tables"
+      ],
+      "metadata": {
+        "id": "R-KW_uDlv4sW",
+        "outputId": "edb41d12-19c4-43b3-efcb-ce33f366a79d",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 201
+        }
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\n",
+            "  SELECT table_name\n",
+            "  FROM `bigquery-public-data.fda_drug.INFORMATION_SCHEMA.TABLES`\n",
+            "\n",
+            "Dry run: 0.0105 GB\n"
+          ]
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "         table_name\n",
+              "0        drug_label\n",
+              "1  drug_enforcement"
+            ],
+            "text/html": [
+              "\n",
+              "  <div id=\"df-9654e4de-c15a-4623-827e-5db2a4f7e3a3\" class=\"colab-df-container\">\n",
+              "    <div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>table_name</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>0</th>\n",
+              "      <td>drug_label</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>1</th>\n",
+              "      <td>drug_enforcement</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>\n",
+              "    <div class=\"colab-df-buttons\">\n",
+              "\n",
+              "  <div class=\"colab-df-container\">\n",
+              "    <button class=\"colab-df-convert\" onclick=\"convertToInteractive('df-9654e4de-c15a-4623-827e-5db2a4f7e3a3')\"\n",
+              "            title=\"Convert this dataframe to an interactive table.\"\n",
+              "            style=\"display:none;\">\n",
+              "\n",
+              "  <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\" viewBox=\"0 -960 960 960\">\n",
+              "    <path d=\"M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z\"/>\n",
+              "  </svg>\n",
+              "    </button>\n",
+              "\n",
+              "  <style>\n",
+              "    .colab-df-container {\n",
+              "      display:flex;\n",
+              "      gap: 12px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert {\n",
+              "      background-color: #E8F0FE;\n",
+              "      border: none;\n",
+              "      border-radius: 50%;\n",
+              "      cursor: pointer;\n",
+              "      display: none;\n",
+              "      fill: #1967D2;\n",
+              "      height: 32px;\n",
+              "      padding: 0 0 0 0;\n",
+              "      width: 32px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert:hover {\n",
+              "      background-color: #E2EBFA;\n",
+              "      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);\n",
+              "      fill: #174EA6;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-buttons div {\n",
+              "      margin-bottom: 4px;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert {\n",
+              "      background-color: #3B4455;\n",
+              "      fill: #D2E3FC;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert:hover {\n",
+              "      background-color: #434B5C;\n",
+              "      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);\n",
+              "      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));\n",
+              "      fill: #FFFFFF;\n",
+              "    }\n",
+              "  </style>\n",
+              "\n",
+              "    <script>\n",
+              "      const buttonEl =\n",
+              "        document.querySelector('#df-9654e4de-c15a-4623-827e-5db2a4f7e3a3 button.colab-df-convert');\n",
+              "      buttonEl.style.display =\n",
+              "        google.colab.kernel.accessAllowed ? 'block' : 'none';\n",
+              "\n",
+              "      async function convertToInteractive(key) {\n",
+              "        const element = document.querySelector('#df-9654e4de-c15a-4623-827e-5db2a4f7e3a3');\n",
+              "        const dataTable =\n",
+              "          await google.colab.kernel.invokeFunction('convertToInteractive',\n",
+              "                                                    [key], {});\n",
+              "        if (!dataTable) return;\n",
+              "\n",
+              "        const docLinkHtml = 'Like what you see? Visit the ' +\n",
+              "          '<a target=\"_blank\" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'\n",
+              "          + ' to learn more about interactive tables.';\n",
+              "        element.innerHTML = '';\n",
+              "        dataTable['output_type'] = 'display_data';\n",
+              "        await google.colab.output.renderOutput(dataTable, element);\n",
+              "        const docLink = document.createElement('div');\n",
+              "        docLink.innerHTML = docLinkHtml;\n",
+              "        element.appendChild(docLink);\n",
+              "      }\n",
+              "    </script>\n",
+              "  </div>\n",
+              "\n",
+              "\n",
+              "  <div id=\"id_51b36d4c-d6fc-4c3b-b7f6-ce709d2747d4\">\n",
+              "    <style>\n",
+              "      .colab-df-generate {\n",
+              "        background-color: #E8F0FE;\n",
+              "        border: none;\n",
+              "        border-radius: 50%;\n",
+              "        cursor: pointer;\n",
+              "        display: none;\n",
+              "        fill: #1967D2;\n",
+              "        height: 32px;\n",
+              "        padding: 0 0 0 0;\n",
+              "        width: 32px;\n",
+              "      }\n",
+              "\n",
+              "      .colab-df-generate:hover {\n",
+              "        background-color: #E2EBFA;\n",
+              "        box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);\n",
+              "        fill: #174EA6;\n",
+              "      }\n",
+              "\n",
+              "      [theme=dark] .colab-df-generate {\n",
+              "        background-color: #3B4455;\n",
+              "        fill: #D2E3FC;\n",
+              "      }\n",
+              "\n",
+              "      [theme=dark] .colab-df-generate:hover {\n",
+              "        background-color: #434B5C;\n",
+              "        box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);\n",
+              "        filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));\n",
+              "        fill: #FFFFFF;\n",
+              "      }\n",
+              "    </style>\n",
+              "    <button class=\"colab-df-generate\" onclick=\"generateWithVariable('tables')\"\n",
+              "            title=\"Generate code using this dataframe.\"\n",
+              "            style=\"display:none;\">\n",
+              "\n",
+              "  <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\"viewBox=\"0 0 24 24\"\n",
+              "       width=\"24px\">\n",
+              "    <path d=\"M7,19H8.4L18.45,9,17,7.55,7,17.6ZM5,21V16.75L18.45,3.32a2,2,0,0,1,2.83,0l1.4,1.43a1.91,1.91,0,0,1,.58,1.4,1.91,1.91,0,0,1-.58,1.4L9.25,21ZM18.45,9,17,7.55Zm-12,3A5.31,5.31,0,0,0,4.9,8.1,5.31,5.31,0,0,0,1,6.5,5.31,5.31,0,0,0,4.9,4.9,5.31,5.31,0,0,0,6.5,1,5.31,5.31,0,0,0,8.1,4.9,5.31,5.31,0,0,0,12,6.5,5.46,5.46,0,0,0,6.5,12Z\"/>\n",
+              "  </svg>\n",
+              "    </button>\n",
+              "    <script>\n",
+              "      (() => {\n",
+              "      const buttonEl =\n",
+              "        document.querySelector('#id_51b36d4c-d6fc-4c3b-b7f6-ce709d2747d4 button.colab-df-generate');\n",
+              "      buttonEl.style.display =\n",
+              "        google.colab.kernel.accessAllowed ? 'block' : 'none';\n",
+              "\n",
+              "      buttonEl.onclick = () => {\n",
+              "        google.colab.notebook.generateWithVariable('tables');\n",
+              "      }\n",
+              "      })();\n",
+              "    </script>\n",
+              "  </div>\n",
+              "\n",
+              "    </div>\n",
+              "  </div>\n"
+            ],
+            "application/vnd.google.colaboratory.intrinsic+json": {
+              "type": "dataframe",
+              "variable_name": "tables",
+              "summary": "{\n  \"name\": \"tables\",\n  \"rows\": 2,\n  \"fields\": [\n    {\n      \"column\": \"table_name\",\n      \"properties\": {\n        \"dtype\": \"string\",\n        \"num_unique_values\": 2,\n        \"samples\": [\n          \"drug_enforcement\",\n          \"drug_label\"\n        ],\n        \"semantic_type\": \"\",\n        \"description\": \"\"\n      }\n    }\n  ]\n}"
+            }
+          },
+          "metadata": {},
+          "execution_count": 3
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "query = '''\n",
+        "  SELECT column_name, data_type\n",
+        "  FROM `bigquery-public-data.fda_drug.INFORMATION_SCHEMA.COLUMNS`\n",
+        "  WHERE table_name = 'drug_enforcement'\n",
+        "  ORDER BY ordinal_position\n",
+        "'''\n",
+        "print(query)\n",
+        "columns = bq_query(query)\n",
+        "columns"
+      ],
+      "metadata": {
+        "id": "-xQo-2Sgv4ff",
+        "outputId": "1aeff419-8f53-4bf0-bd84-b02a0e9a0c4c",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 1000
+        }
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\n",
+            "  SELECT column_name, data_type\n",
+            "  FROM `bigquery-public-data.fda_drug.INFORMATION_SCHEMA.COLUMNS`\n",
+            "  WHERE table_name = 'drug_enforcement'\n",
+            "  ORDER BY ordinal_position\n",
+            "\n",
+            "Dry run: 0.0105 GB\n"
+          ]
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "                   column_name data_type\n",
+              "0               classification    STRING\n",
+              "1   center_classification_date      DATE\n",
+              "2                  report_date      DATE\n",
+              "3                  postal_code    STRING\n",
+              "4             termination_date      DATE\n",
+              "5       recall_initiation_date      DATE\n",
+              "6                recall_number    STRING\n",
+              "7                         city    STRING\n",
+              "8               more_code_info    STRING\n",
+              "9                     event_id     INT64\n",
+              "10        distribution_pattern    STRING\n",
+              "11  openfda_application_number    STRING\n",
+              "12          openfda_brand_name    STRING\n",
+              "13         openfda_dosage_form    STRING\n",
+              "14        openfda_generic_name    STRING\n",
+              "15   openfda_manufacturer_name    STRING\n",
+              "16         openfda_product_ndc    STRING\n",
+              "17        openfda_product_type    STRING\n",
+              "18               openfda_route    STRING\n",
+              "19      openfda_substance_name    STRING\n",
+              "20              openfda_spl_id    STRING\n",
+              "21          openfda_spl_set_id    STRING\n",
+              "22     openfda_pharm_class_moa    STRING\n",
+              "23      openfda_pharm_class_cs    STRING\n",
+              "24      openfda_pharm_class_pe    STRING\n",
+              "25     openfda_pharm_class_epc    STRING\n",
+              "26                 openfda_upc    STRING\n",
+              "27                openfda_unii    STRING\n",
+              "28               openfda_rxcui    STRING\n",
+              "29              recalling_firm    STRING\n",
+              "30          voluntary_mandated    STRING\n",
+              "31                       state    STRING\n",
+              "32           reason_for_recall    STRING\n",
+              "33   initial_firm_notification    STRING\n",
+              "34                      status    STRING\n",
+              "35                product_type    STRING\n",
+              "36                     country    STRING\n",
+              "37         product_description    STRING\n",
+              "38                   code_info    STRING\n",
+              "39                   address_1    STRING\n",
+              "40                   address_2    STRING\n",
+              "41            product_quantity    STRING"
+            ],
+            "text/html": [
+              "\n",
+              "  <div id=\"df-6be8a880-b667-4a71-aa03-ff32e788bdf6\" class=\"colab-df-container\">\n",
+              "    <div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>column_name</th>\n",
+              "      <th>data_type</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>0</th>\n",
+              "      <td>classification</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>1</th>\n",
+              "      <td>center_classification_date</td>\n",
+              "      <td>DATE</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>2</th>\n",
+              "      <td>report_date</td>\n",
+              "      <td>DATE</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>3</th>\n",
+              "      <td>postal_code</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>4</th>\n",
+              "      <td>termination_date</td>\n",
+              "      <td>DATE</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>5</th>\n",
+              "      <td>recall_initiation_date</td>\n",
+              "      <td>DATE</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>6</th>\n",
+              "      <td>recall_number</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>7</th>\n",
+              "      <td>city</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>8</th>\n",
+              "      <td>more_code_info</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>9</th>\n",
+              "      <td>event_id</td>\n",
+              "      <td>INT64</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>10</th>\n",
+              "      <td>distribution_pattern</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>11</th>\n",
+              "      <td>openfda_application_number</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>12</th>\n",
+              "      <td>openfda_brand_name</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>13</th>\n",
+              "      <td>openfda_dosage_form</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>14</th>\n",
+              "      <td>openfda_generic_name</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>15</th>\n",
+              "      <td>openfda_manufacturer_name</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>16</th>\n",
+              "      <td>openfda_product_ndc</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>17</th>\n",
+              "      <td>openfda_product_type</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>18</th>\n",
+              "      <td>openfda_route</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>19</th>\n",
+              "      <td>openfda_substance_name</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>20</th>\n",
+              "      <td>openfda_spl_id</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>21</th>\n",
+              "      <td>openfda_spl_set_id</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>22</th>\n",
+              "      <td>openfda_pharm_class_moa</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>23</th>\n",
+              "      <td>openfda_pharm_class_cs</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>24</th>\n",
+              "      <td>openfda_pharm_class_pe</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>25</th>\n",
+              "      <td>openfda_pharm_class_epc</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>26</th>\n",
+              "      <td>openfda_upc</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>27</th>\n",
+              "      <td>openfda_unii</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>28</th>\n",
+              "      <td>openfda_rxcui</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>29</th>\n",
+              "      <td>recalling_firm</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>30</th>\n",
+              "      <td>voluntary_mandated</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>31</th>\n",
+              "      <td>state</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>32</th>\n",
+              "      <td>reason_for_recall</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>33</th>\n",
+              "      <td>initial_firm_notification</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>34</th>\n",
+              "      <td>status</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>35</th>\n",
+              "      <td>product_type</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>36</th>\n",
+              "      <td>country</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>37</th>\n",
+              "      <td>product_description</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>38</th>\n",
+              "      <td>code_info</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>39</th>\n",
+              "      <td>address_1</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>40</th>\n",
+              "      <td>address_2</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "    <tr>\n",
+              "      <th>41</th>\n",
+              "      <td>product_quantity</td>\n",
+              "      <td>STRING</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>\n",
+              "    <div class=\"colab-df-buttons\">\n",
+              "\n",
+              "  <div class=\"colab-df-container\">\n",
+              "    <button class=\"colab-df-convert\" onclick=\"convertToInteractive('df-6be8a880-b667-4a71-aa03-ff32e788bdf6')\"\n",
+              "            title=\"Convert this dataframe to an interactive table.\"\n",
+              "            style=\"display:none;\">\n",
+              "\n",
+              "  <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\" viewBox=\"0 -960 960 960\">\n",
+              "    <path d=\"M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z\"/>\n",
+              "  </svg>\n",
+              "    </button>\n",
+              "\n",
+              "  <style>\n",
+              "    .colab-df-container {\n",
+              "      display:flex;\n",
+              "      gap: 12px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert {\n",
+              "      background-color: #E8F0FE;\n",
+              "      border: none;\n",
+              "      border-radius: 50%;\n",
+              "      cursor: pointer;\n",
+              "      display: none;\n",
+              "      fill: #1967D2;\n",
+              "      height: 32px;\n",
+              "      padding: 0 0 0 0;\n",
+              "      width: 32px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert:hover {\n",
+              "      background-color: #E2EBFA;\n",
+              "      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);\n",
+              "      fill: #174EA6;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-buttons div {\n",
+              "      margin-bottom: 4px;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert {\n",
+              "      background-color: #3B4455;\n",
+              "      fill: #D2E3FC;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert:hover {\n",
+              "      background-color: #434B5C;\n",
+              "      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);\n",
+              "      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));\n",
+              "      fill: #FFFFFF;\n",
+              "    }\n",
+              "  </style>\n",
+              "\n",
+              "    <script>\n",
+              "      const buttonEl =\n",
+              "        document.querySelector('#df-6be8a880-b667-4a71-aa03-ff32e788bdf6 button.colab-df-convert');\n",
+              "      buttonEl.style.display =\n",
+              "        google.colab.kernel.accessAllowed ? 'block' : 'none';\n",
+              "\n",
+              "      async function convertToInteractive(key) {\n",
+              "        const element = document.querySelector('#df-6be8a880-b667-4a71-aa03-ff32e788bdf6');\n",
+              "        const dataTable =\n",
+              "          await google.colab.kernel.invokeFunction('convertToInteractive',\n",
+              "                                                    [key], {});\n",
+              "        if (!dataTable) return;\n",
+              "\n",
+              "        const docLinkHtml = 'Like what you see? Visit the ' +\n",
+              "          '<a target=\"_blank\" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'\n",
+              "          + ' to learn more about interactive tables.';\n",
+              "        element.innerHTML = '';\n",
+              "        dataTable['output_type'] = 'display_data';\n",
+              "        await google.colab.output.renderOutput(dataTable, element);\n",
+              "        const docLink = document.createElement('div');\n",
+              "        docLink.innerHTML = docLinkHtml;\n",
+              "        element.appendChild(docLink);\n",
+              "      }\n",
+              "    </script>\n",
+              "  </div>\n",
+              "\n",
+              "\n",
+              "  <div id=\"id_855ee936-3cb9-48a9-8d16-1c6340599b74\">\n",
+              "    <style>\n",
+              "      .colab-df-generate {\n",
+              "        background-color: #E8F0FE;\n",
+              "        border: none;\n",
+              "        border-radius: 50%;\n",
+              "        cursor: pointer;\n",
+              "        display: none;\n",
+              "        fill: #1967D2;\n",
+              "        height: 32px;\n",
+              "        padding: 0 0 0 0;\n",
+              "        width: 32px;\n",
+              "      }\n",
+              "\n",
+              "      .colab-df-generate:hover {\n",
+              "        background-color: #E2EBFA;\n",
+              "        box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);\n",
+              "        fill: #174EA6;\n",
+              "      }\n",
+              "\n",
+              "      [theme=dark] .colab-df-generate {\n",
+              "        background-color: #3B4455;\n",
+              "        fill: #D2E3FC;\n",
+              "      }\n",
+              "\n",
+              "      [theme=dark] .colab-df-generate:hover {\n",
+              "        background-color: #434B5C;\n",
+              "        box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);\n",
+              "        filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));\n",
+              "        fill: #FFFFFF;\n",
+              "      }\n",
+              "    </style>\n",
+              "    <button class=\"colab-df-generate\" onclick=\"generateWithVariable('columns')\"\n",
+              "            title=\"Generate code using this dataframe.\"\n",
+              "            style=\"display:none;\">\n",
+              "\n",
+              "  <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\"viewBox=\"0 0 24 24\"\n",
+              "       width=\"24px\">\n",
+              "    <path d=\"M7,19H8.4L18.45,9,17,7.55,7,17.6ZM5,21V16.75L18.45,3.32a2,2,0,0,1,2.83,0l1.4,1.43a1.91,1.91,0,0,1,.58,1.4,1.91,1.91,0,0,1-.58,1.4L9.25,21ZM18.45,9,17,7.55Zm-12,3A5.31,5.31,0,0,0,4.9,8.1,5.31,5.31,0,0,0,1,6.5,5.31,5.31,0,0,0,4.9,4.9,5.31,5.31,0,0,0,6.5,1,5.31,5.31,0,0,0,8.1,4.9,5.31,5.31,0,0,0,12,6.5,5.46,5.46,0,0,0,6.5,12Z\"/>\n",
+              "  </svg>\n",
+              "    </button>\n",
+              "    <script>\n",
+              "      (() => {\n",
+              "      const buttonEl =\n",
+              "        document.querySelector('#id_855ee936-3cb9-48a9-8d16-1c6340599b74 button.colab-df-generate');\n",
+              "      buttonEl.style.display =\n",
+              "        google.colab.kernel.accessAllowed ? 'block' : 'none';\n",
+              "\n",
+              "      buttonEl.onclick = () => {\n",
+              "        google.colab.notebook.generateWithVariable('columns');\n",
+              "      }\n",
+              "      })();\n",
+              "    </script>\n",
+              "  </div>\n",
+              "\n",
+              "    </div>\n",
+              "  </div>\n"
+            ],
+            "application/vnd.google.colaboratory.intrinsic+json": {
+              "type": "dataframe",
+              "variable_name": "columns",
+              "summary": "{\n  \"name\": \"columns\",\n  \"rows\": 42,\n  \"fields\": [\n    {\n      \"column\": \"column_name\",\n      \"properties\": {\n        \"dtype\": \"string\",\n        \"num_unique_values\": 42,\n        \"samples\": [\n          \"openfda_pharm_class_epc\",\n          \"openfda_dosage_form\",\n          \"more_code_info\"\n        ],\n        \"semantic_type\": \"\",\n        \"description\": \"\"\n      }\n    },\n    {\n      \"column\": \"data_type\",\n      \"properties\": {\n        \"dtype\": \"category\",\n        \"num_unique_values\": 3,\n        \"samples\": [\n          \"STRING\",\n          \"DATE\",\n          \"INT64\"\n        ],\n        \"semantic_type\": \"\",\n        \"description\": \"\"\n      }\n    }\n  ]\n}"
+            }
+          },
+          "metadata": {},
+          "execution_count": 4
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "query = '''\n",
+        "  SELECT MIN(recall_initiation_date) AS first_recall,\n",
+        "         MAX(recall_initiation_date) AS last_recall,\n",
+        "         COUNT(*) AS n_rows,\n",
+        "         COUNT(DISTINCT event_id) AS n_events\n",
+        "  FROM `bigquery-public-data.fda_drug.drug_enforcement`\n",
+        "'''\n",
+        "print(query)\n",
+        "summary = bq_query(query)\n",
+        "summary"
+      ],
+      "metadata": {
+        "id": "4iqtlGBzEB4H",
+        "outputId": "9b507f09-2c78-4fbf-a8db-f2c1d40bec7d",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 232
+        }
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\n",
+            "  SELECT MIN(recall_initiation_date) AS first_recall,\n",
+            "         MAX(recall_initiation_date) AS last_recall,\n",
+            "         COUNT(*) AS n_rows,\n",
+            "         COUNT(DISTINCT event_id) AS n_events\n",
+            "  FROM `bigquery-public-data.fda_drug.drug_enforcement`\n",
+            "\n",
+            "Dry run: 0.0003 GB\n"
+          ]
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "  first_recall last_recall  n_rows  n_events\n",
+              "0   2006-02-24  2026-10-13   18076      4727"
+            ],
+            "text/html": [
+              "\n",
+              "  <div id=\"df-45f9813d-572b-4be2-8ffa-db941a766c30\" class=\"colab-df-container\">\n",
+              "    <div>\n",
+              "<style scoped>\n",
+              "    .dataframe tbody tr th:only-of-type {\n",
+              "        vertical-align: middle;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe tbody tr th {\n",
+              "        vertical-align: top;\n",
+              "    }\n",
+              "\n",
+              "    .dataframe thead th {\n",
+              "        text-align: right;\n",
+              "    }\n",
+              "</style>\n",
+              "<table border=\"1\" class=\"dataframe\">\n",
+              "  <thead>\n",
+              "    <tr style=\"text-align: right;\">\n",
+              "      <th></th>\n",
+              "      <th>first_recall</th>\n",
+              "      <th>last_recall</th>\n",
+              "      <th>n_rows</th>\n",
+              "      <th>n_events</th>\n",
+              "    </tr>\n",
+              "  </thead>\n",
+              "  <tbody>\n",
+              "    <tr>\n",
+              "      <th>0</th>\n",
+              "      <td>2006-02-24</td>\n",
+              "      <td>2026-10-13</td>\n",
+              "      <td>18076</td>\n",
+              "      <td>4727</td>\n",
+              "    </tr>\n",
+              "  </tbody>\n",
+              "</table>\n",
+              "</div>\n",
+              "    <div class=\"colab-df-buttons\">\n",
+              "\n",
+              "  <div class=\"colab-df-container\">\n",
+              "    <button class=\"colab-df-convert\" onclick=\"convertToInteractive('df-45f9813d-572b-4be2-8ffa-db941a766c30')\"\n",
+              "            title=\"Convert this dataframe to an interactive table.\"\n",
+              "            style=\"display:none;\">\n",
+              "\n",
+              "  <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\" viewBox=\"0 -960 960 960\">\n",
+              "    <path d=\"M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z\"/>\n",
+              "  </svg>\n",
+              "    </button>\n",
+              "\n",
+              "  <style>\n",
+              "    .colab-df-container {\n",
+              "      display:flex;\n",
+              "      gap: 12px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert {\n",
+              "      background-color: #E8F0FE;\n",
+              "      border: none;\n",
+              "      border-radius: 50%;\n",
+              "      cursor: pointer;\n",
+              "      display: none;\n",
+              "      fill: #1967D2;\n",
+              "      height: 32px;\n",
+              "      padding: 0 0 0 0;\n",
+              "      width: 32px;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-convert:hover {\n",
+              "      background-color: #E2EBFA;\n",
+              "      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);\n",
+              "      fill: #174EA6;\n",
+              "    }\n",
+              "\n",
+              "    .colab-df-buttons div {\n",
+              "      margin-bottom: 4px;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert {\n",
+              "      background-color: #3B4455;\n",
+              "      fill: #D2E3FC;\n",
+              "    }\n",
+              "\n",
+              "    [theme=dark] .colab-df-convert:hover {\n",
+              "      background-color: #434B5C;\n",
+              "      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);\n",
+              "      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));\n",
+              "      fill: #FFFFFF;\n",
+              "    }\n",
+              "  </style>\n",
+              "\n",
+              "    <script>\n",
+              "      const buttonEl =\n",
+              "        document.querySelector('#df-45f9813d-572b-4be2-8ffa-db941a766c30 button.colab-df-convert');\n",
+              "      buttonEl.style.display =\n",
+              "        google.colab.kernel.accessAllowed ? 'block' : 'none';\n",
+              "\n",
+              "      async function convertToInteractive(key) {\n",
+              "        const element = document.querySelector('#df-45f9813d-572b-4be2-8ffa-db941a766c30');\n",
+              "        const dataTable =\n",
+              "          await google.colab.kernel.invokeFunction('convertToInteractive',\n",
+              "                                                    [key], {});\n",
+              "        if (!dataTable) return;\n",
+              "\n",
+              "        const docLinkHtml = 'Like what you see? Visit the ' +\n",
+              "          '<a target=\"_blank\" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'\n",
+              "          + ' to learn more about interactive tables.';\n",
+              "        element.innerHTML = '';\n",
+              "        dataTable['output_type'] = 'display_data';\n",
+              "        await google.colab.output.renderOutput(dataTable, element);\n",
+              "        const docLink = document.createElement('div');\n",
+              "        docLink.innerHTML = docLinkHtml;\n",
+              "        element.appendChild(docLink);\n",
+              "      }\n",
+              "    </script>\n",
+              "  </div>\n",
+              "\n",
+              "\n",
+              "  <div id=\"id_2243770e-23a5-440a-baeb-773c47e84801\">\n",
+              "    <style>\n",
+              "      .colab-df-generate {\n",
+              "        background-color: #E8F0FE;\n",
+              "        border: none;\n",
+              "        border-radius: 50%;\n",
+              "        cursor: pointer;\n",
+              "        display: none;\n",
+              "        fill: #1967D2;\n",
+              "        height: 32px;\n",
+              "        padding: 0 0 0 0;\n",
+              "        width: 32px;\n",
+              "      }\n",
+              "\n",
+              "      .colab-df-generate:hover {\n",
+              "        background-color: #E2EBFA;\n",
+              "        box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);\n",
+              "        fill: #174EA6;\n",
+              "      }\n",
+              "\n",
+              "      [theme=dark] .colab-df-generate {\n",
+              "        background-color: #3B4455;\n",
+              "        fill: #D2E3FC;\n",
+              "      }\n",
+              "\n",
+              "      [theme=dark] .colab-df-generate:hover {\n",
+              "        background-color: #434B5C;\n",
+              "        box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);\n",
+              "        filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));\n",
+              "        fill: #FFFFFF;\n",
+              "      }\n",
+              "    </style>\n",
+              "    <button class=\"colab-df-generate\" onclick=\"generateWithVariable('summary')\"\n",
+              "            title=\"Generate code using this dataframe.\"\n",
+              "            style=\"display:none;\">\n",
+              "\n",
+              "  <svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\"viewBox=\"0 0 24 24\"\n",
+              "       width=\"24px\">\n",
+              "    <path d=\"M7,19H8.4L18.45,9,17,7.55,7,17.6ZM5,21V16.75L18.45,3.32a2,2,0,0,1,2.83,0l1.4,1.43a1.91,1.91,0,0,1,.58,1.4,1.91,1.91,0,0,1-.58,1.4L9.25,21ZM18.45,9,17,7.55Zm-12,3A5.31,5.31,0,0,0,4.9,8.1,5.31,5.31,0,0,0,1,6.5,5.31,5.31,0,0,0,4.9,4.9,5.31,5.31,0,0,0,6.5,1,5.31,5.31,0,0,0,8.1,4.9,5.31,5.31,0,0,0,12,6.5,5.46,5.46,0,0,0,6.5,12Z\"/>\n",
+              "  </svg>\n",
+              "    </button>\n",
+              "    <script>\n",
+              "      (() => {\n",
+              "      const buttonEl =\n",
+              "        document.querySelector('#id_2243770e-23a5-440a-baeb-773c47e84801 button.colab-df-generate');\n",
+              "      buttonEl.style.display =\n",
+              "        google.colab.kernel.accessAllowed ? 'block' : 'none';\n",
+              "\n",
+              "      buttonEl.onclick = () => {\n",
+              "        google.colab.notebook.generateWithVariable('summary');\n",
+              "      }\n",
+              "      })();\n",
+              "    </script>\n",
+              "  </div>\n",
+              "\n",
+              "    </div>\n",
+              "  </div>\n"
+            ],
+            "application/vnd.google.colaboratory.intrinsic+json": {
+              "type": "dataframe",
+              "variable_name": "summary",
+              "summary": "{\n  \"name\": \"summary\",\n  \"rows\": 1,\n  \"fields\": [\n    {\n      \"column\": \"first_recall\",\n      \"properties\": {\n        \"dtype\": \"dbdate\",\n        \"num_unique_values\": 1,\n        \"samples\": [\n          \"2006-02-24\"\n        ],\n        \"semantic_type\": \"\",\n        \"description\": \"\"\n      }\n    },\n    {\n      \"column\": \"last_recall\",\n      \"properties\": {\n        \"dtype\": \"dbdate\",\n        \"num_unique_values\": 1,\n        \"samples\": [\n          \"2026-10-13\"\n        ],\n        \"semantic_type\": \"\",\n        \"description\": \"\"\n      }\n    },\n    {\n      \"column\": \"n_rows\",\n      \"properties\": {\n        \"dtype\": \"Int64\",\n        \"num_unique_values\": 1,\n        \"samples\": [\n          18076\n        ],\n        \"semantic_type\": \"\",\n        \"description\": \"\"\n      }\n    },\n    {\n      \"column\": \"n_events\",\n      \"properties\": {\n        \"dtype\": \"Int64\",\n        \"num_unique_values\": 1,\n        \"samples\": [\n          4727\n        ],\n        \"semantic_type\": \"\",\n        \"description\": \"\"\n      }\n    }\n  ]\n}"
+            }
+          },
+          "metadata": {},
+          "execution_count": 5
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "#### WHERE\n"
+      ],
+      "metadata": {
+        "id": "Hl_d5iY3voem"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "f-krAa9Wv3mG"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "#### AND\n"
+      ],
+      "metadata": {
+        "id": "Btiy75YWvn1p"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "tN4nVpb9v3KT"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "#### OR\n"
+      ],
+      "metadata": {
+        "id": "P5d74YaCvnU9"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "poImHgUNv2v4"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "#### LIKE (with % or _ wildcard)\n"
+      ],
+      "metadata": {
+        "id": "EG7aZU58vmvR"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "1z0yD6H-v2Ny"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "#### BETWEEN\n"
+      ],
+      "metadata": {
+        "id": "HeZaCzlUvmEM"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "rvQv3lR2v0Xi"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "#### LIMIT\n",
+        "\n"
+      ],
+      "metadata": {
+        "id": "2ygrolOZvlTT"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "vWR0Rf4EvzyL"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "### Sorting and Grouping\n"
+      ],
+      "metadata": {
+        "id": "j8GEuaSKvkgO"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "#### ORDER BY\n"
+      ],
+      "metadata": {
+        "id": "_nxw7-eZvj2e"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "KepHvCgRvyZf"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "#### DISTINCT\n"
+      ],
+      "metadata": {
+        "id": "xqrg--pMvi9C"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "j2oYvkTBvx46"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "#### GROUP BY\n",
+        "\n"
+      ],
+      "metadata": {
+        "id": "7iPTT9X5vh2U"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "pAz5EJL0vxNq"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "### Aggregates\n"
+      ],
+      "metadata": {
+        "id": "v0RQid2Svgxp"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "#### MAX\n"
+      ],
+      "metadata": {
+        "id": "siSDvU92vfHN"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "DHiUetTwvwBA"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "#### MIN\n"
+      ],
+      "metadata": {
+        "id": "jGd8Nu-eveSf"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "crn50CYjvvh-"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "#### SUM\n"
+      ],
+      "metadata": {
+        "id": "FjoUQxukvdPn"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "MMm02XEpvvBv"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "#### AVG\n"
+      ],
+      "metadata": {
+        "id": "MG5ZZOc1vcf_"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "AddiGKW7vuBe"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "#### COUNT\n",
+        "\n"
+      ],
+      "metadata": {
+        "id": "QHqh4eeXvboz"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "NMrvo0jE6LL9"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "## Make some plots\n",
+        "\n",
+        "Make some cool plots to go with your data. Write SQL queries to get ONLY the information you need for each plot. (Don't pull ALL the data and then just plot a few columns.)\n",
+        "\n"
+      ],
+      "metadata": {
+        "id": "ntL8dHJT57K8"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "SZXIuqBX6L50"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "## EXTRA CREDIT:"
+      ],
+      "metadata": {
+        "id": "H6QrBn3n58mU"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "#### Use a query that joins two tables.\n"
+      ],
+      "metadata": {
+        "id": "sP4dPeyzwMDE"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "XIZq3j1JwOJP"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "#### Make a model to see if you can predict something\n"
+      ],
+      "metadata": {
+        "id": "rgVUGrtbwLcP"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "xHUlt2c7wO7-"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "#### Come up with something else cool to do with your data\n"
+      ],
+      "metadata": {
+        "id": "mJl5WAVMwK0j"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "rEZQv6vn59IP"
+      },
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
